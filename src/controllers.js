@@ -1,31 +1,56 @@
-;var module = (function(document, module) {
+;var lib = (function(document, lib) {
   
-  function ToDoList(){
-    this.todoList = [];
+  function EnterController(eventBus, storage){
+    this.storage = storage;
+    this.eventBus = eventBus;
   }
   
-  ToDoList.prototype.addNew = function(text) {
-    this.todoList.push(new module.models.ToDo(text));
+  EnterController.prototype.addNew = function(text) {
+    var todo = new lib.models.ToDo(text);
+    this.todoList.push(todo);    
+    this.eventBus.fire(lib.events.TODO_ADDED, {id: todo.id});
   };
   
-  ToDoList.prototype.markAsCompleted = function(id) {
-    this.todoList.filter(function(todo){
+  EnterController.prototype.markAsCompleted = function(id) {
+    var todos = this.todoList.filter(function(todo){
       return todo.id === id;
-    }).forEach(function(todo){
+    });
+    
+    if(todos.length === 0) {
+      return;
+    }
+    
+    todos.forEach(function(todo){
       todo.markAsCompleted();
     });
+    
+    this.eventBus.fire(lib.events.TODO_COMPLETED, {id: id});
   };
   
-  ToDoList.prototype.getActive = function() {
-    return this.todoList.filter(module.models.ToDo.isActive);
+  EnterController.prototype.getActive = function() {
+    return this.todoList.filter(lib.models.ToDo.isActive);
   };
   
-  ToDoList.prototype.getCompleted = function() {
-    return this.todoList.filter(module.models.ToDo.isCompleted);
+  EnterController.prototype.getCompleted = function() {
+    return this.todoList.filter(lib.models.ToDo.isCompleted);
   };
   
-  module.controllers = module.controllers || {};
-  module.controllers.ToDoList = new ToDoList();
+  lib.controllers = lib.controllers || {};
+  lib.controllers.EnterController = EnterController;
   
-  return module;
-})(document, module || {})
+  function ListController(eventBus) {
+    this.mode = lib.constants.VIEW_MODE_ALL;
+    this.eventBus = eventBus;
+  }
+  
+  ListController.prototype.getMode = function() {
+    return this.mode;
+  }
+  
+  ListController.prototype. = function(mode) {
+    this.mode = mode;
+    this.eventBus.fire(module.events.SWITCH_VIEW_MODE, mode);
+  }
+  
+  return lib;
+})(document, lib || {})

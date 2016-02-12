@@ -1,4 +1,4 @@
-;var module = (function(document, module) {
+;var lib = (function(document, lib) {
   var STATUS_COMPLETED = 'completed',
       STATUS_ACTIVE    = 'active';
       
@@ -30,8 +30,8 @@
     return todo.isCompleted();
   };
   
-  module.models = module.models || {};
-  module.models.ToDo = ToDo;
+  lib.models = lib.models || {};
+  lib.models.ToDo = ToDo;
   
-  return module;
-})(document, module || {})
+  return lib;
+})(document, lib || {})
