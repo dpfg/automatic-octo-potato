@@ -44,12 +44,14 @@
     this.eventBus.fire(lib.events.TODO_COMPLETED, {id: id});
   };
   
-  function ToolbarController(eventBus) {
+  function ToolbarController(eventBus, storage) {
     this.eventBus = eventBus;
+    this.storage = storage;
   }
   
-  ToolbarController.prototype.switchMode = function () {
-    this.eventBus.fire(module.events.SWITCH_VIEW_MODE);
+  ToolbarController.prototype.switchMode = function (mode) {
+    this.storage.mode = mode;
+    this.eventBus.fire(lib.events.SWITCH_VIEW_MODE, {newMode: mode});
   }
   
   lib.controllers = lib.controllers || {};

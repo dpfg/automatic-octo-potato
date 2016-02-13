@@ -36,9 +36,10 @@
   lib.events.SWITCH_VIEW_MODE = 20;
 
   lib.constants = lib.constants || {};
-  lib.constants.VIEW_MODE_ALL = 100;
-  lib.constants.VIEW_MODE_COMPLETED = 101;
-  lib.constants.VIEW_MODE_ACTIVE = 102;
+  lib.constants.VIEW_MODE_UNKNOWN = 100;
+  lib.constants.VIEW_MODE_ALL = 101;
+  lib.constants.VIEW_MODE_COMPLETED = 102;
+  lib.constants.VIEW_MODE_ACTIVE = 103;
   
   lib.storage = [];
   

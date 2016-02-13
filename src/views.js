@@ -43,8 +43,9 @@
      console.log(this.controller.getToDos()); 
   }
   
-  function ToolbarView(eventBus) {
+  function ToolbarView(eventBus, controller) {
     this.eventBus = eventBus;
+    this.controller = controller;
     this.el = document.querySelector('.footer');
     
     this._bind();
@@ -56,8 +57,8 @@
   }
   
   function calcViewMode(hash) {
-    var viewMode = -1;
-    switch(location.hash) {
+    var viewMode = lib.constants.VIEW_MODE_UNKNOWN;
+    switch(hash) {
       case '#/active': 	  viewMode = lib.constants.VIEW_MODE_ACTIVE; break;
       case '#/completed': viewMode = lib.constants.VIEW_MODE_COMPLETED; break;
       case '#/':       	  viewMode = lib.constants.VIEW_MODE_ALL; break;
@@ -66,14 +67,14 @@
   }
   
   function isKnownViewMode(hash) {
-    return calcViewMode(hash) !== -1;
+    return calcViewMode(hash) !== lib.constants.VIEW_MODE_UNKNOWN;
   }
   
   ToolbarView.prototype._onHashChanged = function () {
-    var viewMode = calcViewMode(location.hash);    
-    if(viewMode !== -1) {
+    var viewMode = calcViewMode(location.hash);
+    if(viewMode !== lib.constants.VIEW_MODE_UNKNOWN) {
       this._apply();
-      this.eventBus.fire(lib.events.SWITCH_VIEW_MODE, {newMode: viewMode});
+      this.controller.switchMode(viewMode);      
     }
   }
   
