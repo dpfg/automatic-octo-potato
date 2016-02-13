@@ -34,6 +34,8 @@
   lib.events.TODO_COMPLETED = 2;
   lib.events.TODO_DELETED = 3;
   lib.events.SWITCH_VIEW_MODE = 20;
+  
+  lib.events.CLEAN_COMPLETED = 30;
 
   lib.constants = lib.constants || {};
   lib.constants.VIEW_MODE_UNKNOWN = 100;

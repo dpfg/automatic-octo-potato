@@ -31,7 +31,7 @@
   function ListView(eventBus, controller) {
     var that = this;
     eventBus.subscribe(function (params) {
-      console.log('Handle any to do:' + params.todo);
+      console.log('Handle any to do');
       that.render();
     });
 
@@ -54,6 +54,7 @@
   
   ToolbarView.prototype._bind = function() {
     _addEventListener(this, window, 'hashchange', this._onHashChanged);
+    _addEventListener(this, this.el.querySelector('.clear-completed'), 'click', this._onClearCompleted);
   }
   
   function calcViewMode(hash) {
@@ -76,6 +77,10 @@
       this._apply();
       this.controller.switchMode(viewMode);      
     }
+  }
+  
+  ToolbarView.prototype._onClearCompleted = function () {
+    this.controller.clearCompleted();
   }
   
   ToolbarView.prototype._apply = function() {

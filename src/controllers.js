@@ -54,6 +54,11 @@
     this.eventBus.fire(lib.events.SWITCH_VIEW_MODE, {newMode: mode});
   }
   
+  ToolbarController.prototype.clearCompleted = function() {
+    this.storage = this.storage.filter(lib.models.ToDo.isActive);
+    this.eventBus.fire(lib.events.CLEAN_COMPLETED);
+  }
+  
   lib.controllers = lib.controllers || {};
   lib.controllers.EnterController = EnterController;
   lib.controllers.ListController = ListController;
