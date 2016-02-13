@@ -1,28 +1,35 @@
 
 ;var lib = (function(document, lib) {
-  function EventBus() {
+  var ANY_EVENT_TYPE = -1;
+  
+  function EventBus() {    
     this.subscribers = {};
   }
   
   EventBus.prototype.subscribe = function(eventType, subscriber) {
+    if(!subscriber) {
+      subscriber = eventType;
+      eventType = ANY_EVENT_TYPE;
+    }
     this.subscribers[eventType] = this.subscribers[eventType] || [];
     this.subscribers[eventType].push(subscriber);  
   }
   
   EventBus.prototype.fire = function(eventType, params) {
-    if(!this.subscribers[eventType]) {
-      return;
-    }
-    
-    this.subscribers[eventType].forEach(function(subscriber){
+    console.log('Fire Event:' + eventType);
+    var toNotify = []
+                    .concat(this.subscribers[eventType] || [])
+                    .concat(this.subscribers[ANY_EVENT_TYPE] || []);    
+                    
+    toNotify.forEach(function(subscriber){
       subscriber(params);
     });
   }
   
+  lib.events = lib.events || {};
   lib.events.EventBus = EventBus;
   
   // declare all events that can be fired in the app.
-  lib.events = lib.events || {};
   lib.events.TODO_ADDED = 1;
   lib.events.TODO_COMPLETED = 2;
   lib.events.TODO_DELETED = 3;

@@ -7,12 +7,29 @@
   
   EnterController.prototype.addNew = function(text) {
     var todo = new lib.models.ToDo(text);
-    this.todoList.push(todo);    
-    this.eventBus.fire(lib.events.TODO_ADDED, {id: todo.id});
-  };
+    this.storage.push(todo);
+    this.eventBus.fire(lib.events.TODO_ADDED, {todo: todo});
+  };  
   
-  EnterController.prototype.markAsCompleted = function(id) {
-    var todos = this.todoList.filter(function(todo){
+  function ListController(eventBus, storage) {
+    this.mode = lib.constants.VIEW_MODE_ALL;
+    this.eventBus = eventBus;
+    this.storage = storage;
+  }
+  
+  ListController.prototype.getToDos = function() {
+    if(this.mode === lib.constants.VIEW_MODE_ALL) {
+      return this.storage;
+    } else if(this.mode === lib.constants.VIEW_MODE_ACTIVE) {
+      return this.storage.filter(lib.models.ToDo.isActive);
+    } else if(this.mode === lib.constants.VIEW_MODE_COMPLETED) {
+      return this.storage.filter(lib.models.ToDo.isCompleted);
+    }
+    return [];
+  }
+  
+  ListController.prototype.markAsCompleted = function(id) {
+    var todos = this.storage.filter(function(todo){
       return todo.id === id;
     });
     
@@ -27,30 +44,18 @@
     this.eventBus.fire(lib.events.TODO_COMPLETED, {id: id});
   };
   
-  EnterController.prototype.getActive = function() {
-    return this.todoList.filter(lib.models.ToDo.isActive);
-  };
-  
-  EnterController.prototype.getCompleted = function() {
-    return this.todoList.filter(lib.models.ToDo.isCompleted);
-  };
-  
-  lib.controllers = lib.controllers || {};
-  lib.controllers.EnterController = EnterController;
-  
-  function ListController(eventBus) {
-    this.mode = lib.constants.VIEW_MODE_ALL;
+  function ToolbarController(eventBus) {
     this.eventBus = eventBus;
   }
   
-  ListController.prototype.getMode = function() {
-    return this.mode;
+  ToolbarController.prototype.switchMode = function () {
+    this.eventBus.fire(module.events.SWITCH_VIEW_MODE);
   }
   
-  ListController.prototype. = function(mode) {
-    this.mode = mode;
-    this.eventBus.fire(module.events.SWITCH_VIEW_MODE, mode);
-  }
+  lib.controllers = lib.controllers || {};
+  lib.controllers.EnterController = EnterController;
+  lib.controllers.ListController = ListController;
+  lib.controllers.ToolbarController = ToolbarController;
   
   return lib;
 })(document, lib || {})

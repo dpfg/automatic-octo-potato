@@ -1,8 +1,10 @@
 function ToDoApp(lib) {
-  this.controller = new lib.controllers.ToDoList();
+  var eventBus = new lib.events.EventBus();
+  this.storage = lib.storage;
   this.views = [
-    new lib.views.EnterView(this.controller),
-    new lib.views.ListView(this.controller),
+    new lib.views.EnterView(new lib.controllers.EnterController(eventBus, this.storage)),
+    new lib.views.ListView(eventBus, new lib.controllers.ListController(eventBus, this.storage)),
+    new lib.views.ToolbarView(eventBus),
     ];
 }
 
