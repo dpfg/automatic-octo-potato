@@ -54,6 +54,10 @@
     this.eventBus.fire(lib.events.SWITCH_VIEW_MODE, {newMode: mode});
   }
   
+  ToolbarController.prototype.hasCompleted = function() {
+    return this.storage.filter(lib.models.ToDo.isCompleted).length > 0;
+  }
+  
   ToolbarController.prototype.clearCompleted = function() {
     this.storage = this.storage.filter(lib.models.ToDo.isActive);
     this.eventBus.fire(lib.events.CLEAN_COMPLETED);

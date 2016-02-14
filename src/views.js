@@ -84,6 +84,12 @@
   }
   
   ToolbarView.prototype._apply = function() {
+    if(this.controller.hasCompleted()) {
+      this.el.querySelector('.clear-completed').classList.remove('hidden');
+    } else {
+      this.el.querySelector('.clear-completed').classList.add('hidden');
+    }
+    
     if(!isKnownViewMode(location.hash)) {
       return;
     }
