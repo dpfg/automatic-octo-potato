@@ -51,6 +51,8 @@ class ToolbarView extends View {
     super.$event(window, 'hashchange', this.onHashChanged);
     super.$event(this.el.querySelector('.clear-completed'), 'click', this.onClearCompleted);
     super.$model('viewMode', () => controller.getViewMode(), (val) => this.viewMode = val);
+
+    this.onHashChanged();
   }
 
   onHashChanged () {
@@ -97,5 +99,6 @@ export class ToolbarComponent extends Component {
     const view = new ToolbarView(controller);
 
     super(eventBus, controller, view);
+    super.$upstream();
   }
 }

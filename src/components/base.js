@@ -4,14 +4,19 @@ export class Component {
   constructor (eventBus, controller, view) {
     this.controller = controller;
     this.view = view;
-    this.view.onEvent = () => eventBus.fire();
-    eventBus.subscribe(() => this.$call());
+    this.eventBus = eventBus;
+    this.view.onEvent = () => this.$upstream();
+    eventBus.subscribe(() => this.$downsteam());
   }
 
-  $call () {
+  $downsteam () {
     if (this.view.$update()) {
       this.view.display();
     }
+  }
+
+  $upstream () {
+    this.eventBus.fire();
   }
 }
 
