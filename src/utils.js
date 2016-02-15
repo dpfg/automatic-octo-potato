@@ -1,12 +1,5 @@
 
 var lib = (function (document, lib) {
-  // declare global constants
-  lib.constants = lib.constants || {};
-  
-  lib.constants.VIEW_MODE_UNKNOWN = 100;
-  lib.constants.VIEW_MODE_ALL = 101;
-  lib.constants.VIEW_MODE_COMPLETED = 102;
-  lib.constants.VIEW_MODE_ACTIVE = 103;
 
 	// simple DSL to create new todo DOM elements 
   lib.html = lib.html || {};
