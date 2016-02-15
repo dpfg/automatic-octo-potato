@@ -1,4 +1,4 @@
-import constants from '../utils';
+import constants from '../constants';
 import { View, Component } from './base';
 
 class ToolbarController {

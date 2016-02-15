@@ -1,4 +1,5 @@
-import constants from '../utils';
+import constants from '../constants';
+import templates from '../templates';
 import { View, Component } from './base';
 
 const modifyToDoById = (storage, id, modifier) => {
@@ -29,11 +30,11 @@ class ListController {
   }
 
   markAsCompleted (id) {
-    modifyToDoById(this.eventBus, this.storage, id, todo => todo.markAsCompleted());
+    modifyToDoById(this.storage, id, todo => todo.markAsCompleted());
   }
 
   markAsActive (id) {
-    modifyToDoById(this.eventBus, this.storage, id, todo => todo.markAsActive());
+    modifyToDoById(this.storage, id, todo => todo.markAsActive());
   }
 
   removeToDo (id) {
@@ -58,7 +59,7 @@ const populateToDoView = (todo, todoView) => {
 class ListView extends View {
   constructor (controller) {
     super('.todo-list');
-    super.$model('todos', () => controller.getToDos(), (todos) => this.todos = todos);
+    super.$model('todos', () => controller.getToDos(), todos => this.todos = todos);
     this.controller = controller;
 
     const todoViews = this.el.querySelectorAll('.toggle') || [];
@@ -96,7 +97,7 @@ class ListView extends View {
 
     this.todos.forEach((todo) => {
       // create new view
-      let todoView = window.lib.html.templates.newToDo();
+      let todoView = templates.newToDo();
 
       todoView = this.el.appendChild(todoView);
       this.addToDoEvents(todoView);

@@ -35,12 +35,13 @@ export class EnterView extends View {
 
   constructor (controller) {
     super();
+    this.controller = controller;
     const textInput = document.querySelector('.todoapp .new-todo');
     const toggleAllBtn = document.querySelector('.todoapp .toggle-all');
 
     super.$event(textInput, 'keydown', this.onCreateNew);
     super.$event(toggleAllBtn, 'click', this.onToggleAll);
-    super.$model('hasTodos', () => controller.hasToDos(), val => this.hasToDos = val);
+    super.$model('hasTodos', () => this.controller.hasToDos(), val => this.hasToDos = val);
   }
 
   onCreateNew () {
