@@ -59,8 +59,8 @@
     return _div;
   };
 
-  lib.html = lib.html || {};
-  lib.html.dsl = {
+
+  var dsl = {
     div: function (clazz) { return generateDOMElement('div', clazz, Array.prototype.slice.call(arguments, 1)); },
     li: function () { return generateDOMElement('li', null, Array.apply(null, arguments)); },
     input: function (clazz, type) {
@@ -72,9 +72,9 @@
     },
     label: function () { return generateDOMElement('label', null, Array.apply(null, arguments)); },
     button: function (clazz) { return generateDOMElement('button', clazz, Array.prototype.slice.call(arguments, 1)); }
-  };
-  var dsl = lib.html.dsl;
+  };  
 
+  lib.html = lib.html || {};
   lib.html.templates = lib.html.templates || {};
   lib.html.templates.newToDo = function () {
     return dsl.li(
