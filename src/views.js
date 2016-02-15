@@ -51,6 +51,7 @@ var lib = (function (document, lib) {
   
   ListView.prototype.linkToDoView = function(todoView) {
     _addEventListener(this, todoView.querySelector('.toggle'), 'click', this._onToggleToDo);
+    _addEventListener(this, todoView.querySelector('.destroy'), 'click', this._onDestroyToDo);
   }
 
   function populateToDoView(todo, todoView) {
@@ -95,6 +96,12 @@ var lib = (function (document, lib) {
       this.controller.markAsActive(todoId);
     }
   }
+  
+  ListView.prototype._onDestroyToDo = function () {
+    var todoView = event.target.parentElement.parentElement;
+    var todoId = Number(todoView.getAttribute('data-id'));
+    this.controller.removeToDo(todoId);
+  }
 
   function ToolbarView(eventBus, controller) {
     this.eventBus = eventBus;
@@ -103,6 +110,11 @@ var lib = (function (document, lib) {
 
     this._bind();
     this._apply();
+    
+    var that = this;
+    eventBus.subscribe(function() {
+      that._apply();
+    });
   }
 
   ToolbarView.prototype._bind = function () {
@@ -141,6 +153,12 @@ var lib = (function (document, lib) {
       this.el.querySelector('.clear-completed').classList.remove('hidden');
     } else {
       this.el.querySelector('.clear-completed').classList.add('hidden');
+    }
+    
+    if(!this.controller.hasToDos()) {
+      this.el.classList.add('hidden');
+    } else {
+      this.el.classList.remove('hidden');
     }
 
     if (!isKnownViewMode(location.hash)) {

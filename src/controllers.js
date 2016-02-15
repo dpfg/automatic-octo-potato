@@ -62,13 +62,20 @@ var lib = (function(document, lib) {
     modifyToDoById(this.eventBus, this.storage, id, function(todo){
       todo.markAsCompleted();
     });
+    this.eventBus.fire(lib.events.TODO_COMPLETED, {id : id});
   };
   
   ListController.prototype.markAsActive = function(id) {
     modifyToDoById(this.eventBus, this.storage, id, function(todo){
       todo.markAsActive();
     });
+    this.eventBus.fire(lib.events.TODO_ACTIVATE, {id : id});
   };
+  
+  ListController.prototype.removeToDo = function(id) {
+    this.storage.removeToDo(id);
+    this.eventBus.fire(lib.events.TODO_DELETED, {id : id});
+  }
 
   function ToolbarController(eventBus, storage) {
     this.eventBus = eventBus;
@@ -85,9 +92,14 @@ var lib = (function(document, lib) {
   }
 
   ToolbarController.prototype.clearCompleted = function() {
-    this.storage.replaceAllToDos(this.storage.filter(lib.models.ToDo.isActive));
+    this.storage.replaceAllToDos(this.storage.getToDos().filter(lib.models.ToDo.isActive));
     this.eventBus.fire(lib.events.CLEAN_COMPLETED);
   }
+  
+  ToolbarController.prototype.hasToDos = function() {
+    return this.storage.getToDos().length > 0;
+  }
+  
 
   lib.controllers = lib.controllers || {};
   lib.controllers.EnterController = EnterController;

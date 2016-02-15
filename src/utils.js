@@ -33,6 +33,7 @@ var lib = (function (document, lib) {
   lib.events.TODO_COMPLETED = 2;
   lib.events.TODO_DELETED = 3;
   lib.events.TODO_TOGGLE_ALL = 4;
+  lib.events.TODO_ACTIVATE = 4;
   lib.events.SWITCH_VIEW_MODE = 20;
 
   lib.events.CLEAN_COMPLETED = 30;
@@ -58,6 +59,12 @@ var lib = (function (document, lib) {
   
   InMemory.prototype.replaceAllToDos = function (todos) {
     this.todos = todos;
+  }
+  
+  InMemory.prototype.removeToDo = function (id) {
+    this.todos = this.todos.filter(function (todo) {
+      return todo.id !== id;
+    });
   }
 
   InMemory.prototype.setMode = function(mode) {
