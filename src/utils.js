@@ -32,6 +32,7 @@ var lib = (function (document, lib) {
   lib.events.TODO_ADDED = 1;
   lib.events.TODO_COMPLETED = 2;
   lib.events.TODO_DELETED = 3;
+  lib.events.TODO_TOGGLE_ALL = 4;
   lib.events.SWITCH_VIEW_MODE = 20;
 
   lib.events.CLEAN_COMPLETED = 30;

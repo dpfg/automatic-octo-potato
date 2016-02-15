@@ -1,4 +1,20 @@
 var lib = (function(document, lib) {
+  
+  function modifyToDoById(eventBus, storage, id, modifier) {
+    var todos = storage.getToDos().filter(function(todo){
+      return todo.id === id;
+    });
+
+    if(todos.length === 0) {
+      return;
+    }
+    todos.forEach(modifier);
+    eventBus.fire(lib.events.TODO_COMPLETED, {id: id});
+  }
+  
+  function hasActive(storage) {
+    return storage.getToDos().filter(lib.models.ToDo.isActive).length > 0;
+  }
 
   function EnterController(eventBus, storage){
     this.storage = storage;
@@ -9,7 +25,21 @@ var lib = (function(document, lib) {
     var todo = new lib.models.ToDo(text);
     this.storage.addToDo(todo);
     this.eventBus.fire(lib.events.TODO_ADDED, {todo: todo});
-  };
+  }
+  
+  EnterController.prototype.toggleAll = function () {
+    if(hasActive(this.storage)) {
+      // complete all
+      this.storage.getToDos().forEach(function(todo){
+        todo.markAsCompleted();
+      }); 
+    } else {
+      this.storage.getToDos().forEach(function(todo){
+        todo.markAsActive();  
+      });  
+    }
+    this.eventBus.fire(lib.events.TODO_TOGGLE_ALL);
+  }
 
   function ListController(eventBus, storage) {
     this.eventBus = eventBus;
@@ -27,27 +57,15 @@ var lib = (function(document, lib) {
     }
     return [];
   }
-  
-  ListController.prototype.modifyToDoById = function(id, modifier) {
-    var todos = this.storage.getToDos().filter(function(todo){
-      return todo.id === id;
-    });
-
-    if(todos.length === 0) {
-      return;
-    }
-    todos.forEach(modifier);
-    this.eventBus.fire(lib.events.TODO_COMPLETED, {id: id});
-  };
 
   ListController.prototype.markAsCompleted = function(id) {
-    this.modifyToDoById(id, function(todo){
+    modifyToDoById(this.eventBus, this.storage, id, function(todo){
       todo.markAsCompleted();
     });
   };
   
   ListController.prototype.markAsActive = function(id) {
-    this.modifyToDoById(id, function(todo){
+    modifyToDoById(this.eventBus, this.storage, id, function(todo){
       todo.markAsActive();
     });
   };

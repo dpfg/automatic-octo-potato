@@ -12,8 +12,11 @@ var lib = (function (document, lib) {
   }
 
   EnterView.prototype._link = function () {
-    this.input = document.querySelector('.new-todo');
+    this.input = document.querySelector('.new-todo');    
     _addEventListener(this, this.input, 'keydown', this._onCreateNew);
+    
+    var toggleAll = document.querySelector('.toggle-all');
+    _addEventListener(this, toggleAll, 'click', this._onToggleAll);
   }
 
   var KEY_CODE_ENTER = 13;
@@ -26,6 +29,10 @@ var lib = (function (document, lib) {
 
   EnterView.prototype.clean = function () {
     this.input.value = '';
+  }
+  
+  EnterView.prototype._onToggleAll = function () {
+    this.controller.toggleAll();
   }
 
   function ListView(eventBus, controller) {
