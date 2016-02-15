@@ -1,27 +1,22 @@
 var lib = (function (document, lib) {
 
   function addViewEvent(view, element, eventName, handler) {
-    element.addEventListener(eventName, function () {
-      handler.call(view, window.event.target);
-    });
+    element.addEventListener(eventName, () => handler.call(view, window.event.target));
   }
 
   function EnterView(eventBus, controller) {
-    this.controller = controller;    
-    var that = this;
+    this.controller = controller;
     this.registerEvents();
-    
-    eventBus.subscribe(function () {
-      that.link();
-    });
+
+    eventBus.subscribe(() => this.link());
   }
 
   // registerEvents view to the DOM
   EnterView.prototype.registerEvents = function () {
-    var input = document.querySelector('.new-todo');    
+    var input = document.querySelector('.todoapp .new-todo');
     addViewEvent(this, input, 'keydown', this.onCreateNew);
-    
-    var toggleAll = document.querySelector('.toggle-all');
+
+    var toggleAll = document.querySelector('.todoapp .toggle-all');
     addViewEvent(this, toggleAll, 'click', this.onToggleAll);
   }
 
@@ -36,85 +31,82 @@ var lib = (function (document, lib) {
   EnterView.prototype.clean = function () {
     document.querySelector('.new-todo').value = '';
   }
-  
+
   EnterView.prototype.onToggleAll = function () {
     this.controller.toggleAll();
   }
-  
+
   EnterView.prototype.link = function () {
-    if(this.controller.hasToDos()){
+    if (this.controller.hasToDos()) {
       document.querySelector('.main').classList.remove('hidden');
     } else {
       document.querySelector('.main').classList.add('hidden');
       document.querySelector('.toggle-all').checked = false;
-    }    
+    }
   }
 
   function ListView(eventBus, controller) {
-    var that = this;
-    eventBus.subscribe(function (params) {
-      that.link();
-    });
+    eventBus.subscribe(() => this.link());
 
     this.controller = controller;
     this.el = document.querySelector('.todo-list');
     var todoViews = this.el.querySelectorAll('.toggle') || [];
-    Array.prototype.forEach.call(todoViews, function(todoView){
-      that.registerEvents(todoView);
-    }); 
+    Array.prototype.forEach.call(todoViews, todoView => this.registerEvents(todoView));
   }
-  
-  ListView.prototype.registerEvents = function(todoView) {
+
+  ListView.prototype.registerEvents = function (todoView) {
     addViewEvent(this, todoView.querySelector('.toggle'), 'click', this.onToggleToDo);
     addViewEvent(this, todoView.querySelector('.destroy'), 'click', this.onDestroyToDo);
   }
-  
+
   function populateToDoView(todo, todoView) {
-     if(todo.isCompleted() && !todoView.classList.contains('completed')) {
-       todoView.classList.add('completed');
-       todoView.querySelector('.toggle').setAttribute('checked', 'checked');
-     } else if(todo.isActive() && todoView.classList.contains('completed')) {
-       todoView.classList.remove('completed');
-       todoView.querySelector('.toggle').removeAttribute('checked');
-     }
-     
+    if (todo.isCompleted() && !todoView.classList.contains('completed')) {
+      todoView.classList.add('completed');
+      todoView.querySelector('.toggle').setAttribute('checked', 'checked');
+    } else if (todo.isActive() && todoView.classList.contains('completed')) {
+      todoView.classList.remove('completed');
+      todoView.querySelector('.toggle').removeAttribute('checked');
+    }
+
 	   todoView.setAttribute('data-id', todo.id);
-     todoView.querySelector('label').innerHTML = todo.text;
+    todoView.querySelector('label').innerHTML = todo.text;
   }
 
   ListView.prototype.link = function () {
     var that = this;
     var todos = this.controller.getToDos();
     var listView = this.el;
-    
-    Array.prototype.forEach.call(this.el.querySelectorAll('li'), function(view){
+
+    Array.prototype.forEach.call(this.el.querySelectorAll('li'), function (view) {
       view.remove();
     });
-    
+
     todos.forEach(function (todo, index) {
-        // create new view
-        var todoView = lib.html.templates.newToDo();
-        todoView = listView.appendChild(todoView);
-        that.registerEvents(todoView);
-        populateToDoView(todo, todoView);      
+      // create new view
+      var todoView = lib.html.templates.newToDo();
+      todoView = listView.appendChild(todoView);
+      that.registerEvents(todoView);
+      populateToDoView(todo, todoView);
     });
   }
-  
-  ListView.prototype.onToggleToDo = function(sourceElm) {
-    var todoView = sourceElm.parentElement.parentElement;
-    if(todoView.classList.toggle('completed')) {
+
+  function getToDoId(todoView) {
+    return Number(todoView.getAttribute('data-id'));
+  }
+
+  ListView.prototype.onToggleToDo = function (sourceElm) {
+    const todoView = sourceElm.parentElement.parentElement;
+    const todoId = getToDoId(todoView);
+    if (todoView.classList.toggle('completed')) {
       // completed
-      var todoId = Number(todoView.getAttribute('data-id'));
       this.controller.markAsCompleted(todoId);
     } else {
-      var todoId = Number(todoView.getAttribute('data-id'));
       this.controller.markAsActive(todoId);
     }
   }
-  
+
   ListView.prototype.onDestroyToDo = function (sourceElm) {
-    var todoView = sourceElm.parentElement.parentElement;
-    var todoId = Number(todoView.getAttribute('data-id'));
+    const todoId = getToDoId(sourceElm.parentElement.parentElement);
     this.controller.removeToDo(todoId);
   }
 
@@ -124,11 +116,8 @@ var lib = (function (document, lib) {
     this.el = document.querySelector('.footer');
 
     this.registerEvents();
-    
-    var that = this;
-    eventBus.subscribe(function() {
-      that.link();
-    });
+
+    eventBus.subscribe(() => this.link());
     this.onHashChanged();
   }
 
@@ -138,7 +127,7 @@ var lib = (function (document, lib) {
   }
 
   function calcViewMode(hash) {
-    var viewMode = lib.constants.VIEW_MODE_UNKNOWN;
+    let viewMode = lib.constants.VIEW_MODE_UNKNOWN;
     switch (hash) {
       case '#/active': viewMode = lib.constants.VIEW_MODE_ACTIVE; break;
       case '#/completed': viewMode = lib.constants.VIEW_MODE_COMPLETED; break;
@@ -152,7 +141,7 @@ var lib = (function (document, lib) {
   }
 
   ToolbarView.prototype.onHashChanged = function () {
-    var viewMode = calcViewMode(location.hash);
+    const viewMode = calcViewMode(location.hash);
     if (viewMode !== lib.constants.VIEW_MODE_UNKNOWN) {
       this.link();
       this.controller.switchMode(viewMode);
@@ -169,8 +158,8 @@ var lib = (function (document, lib) {
     } else {
       this.el.querySelector('.clear-completed').classList.add('hidden');
     }
-    
-    if(!this.controller.hasToDos()) {
+
+    if (!this.controller.hasToDos()) {
       this.el.classList.add('hidden');
     } else {
       this.el.classList.remove('hidden');
@@ -179,7 +168,10 @@ var lib = (function (document, lib) {
     if (!isKnownViewMode(location.hash)) {
       return;
     }
-    this.el.querySelector('.filters .selected').classList.remove('selected');
+    const selectedFilter = this.el.querySelector('.filters .selected');
+    if (selectedFilter) {
+      selectedFilter.classList.remove('selected');
+    }
     this.el.querySelector('.filters li a[href="' + location.hash + '"]').classList.add('selected');
   }
 

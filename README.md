@@ -1,13 +1,3 @@
-- model - describe ToDoItem, ToDoList
-- storage - localstorage interface 
-- controller - listen to DOM events
-- view  - take data from storage and render it
+### How to start
 
-Views:
-- AllView.display() - go through the DOM element and fill them or add/remove
-- ActiveView
-- CompletedView
-
-ToDo
-  -> controller - subscribe to events. on hash changed - choose view and view.display()
-  -> 
+``` npm start ```

@@ -16,13 +16,11 @@ var lib = (function (document, lib) {
   }
 
   EventBus.prototype.fire = function (eventType, params) {
-    var toNotify = []
+    const toNotify = []
       .concat(this.subscribers[eventType] || [])
       .concat(this.subscribers[ANY_EVENT_TYPE] || []);
 
-    toNotify.forEach(function (subscriber) {
-      subscriber(params);
-    });
+    toNotify.forEach(subscriber => subscriber(params));
   }
 
   lib.events = lib.events || {};

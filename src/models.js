@@ -1,8 +1,10 @@
 var lib = (function(document, lib) {
-  var STATUS_COMPLETED = 'completed',
-      STATUS_ACTIVE    = 'active';
+  'use strict';
+  
+  const STATUS_COMPLETED = 'completed',
+        STATUS_ACTIVE    = 'active';
       
-  var lastGeneratedId  = 0; // TODO: read from storage
+  let lastGeneratedId  = 0; // TODO: read from storage
   
   function ToDo(text) {
     this.id 	  = lastGeneratedId++;
@@ -20,19 +22,11 @@ var lib = (function(document, lib) {
   
   ToDo.prototype.isActive = function() {
     return this.status === STATUS_ACTIVE;
-  }
+  }  
   
   ToDo.prototype.isCompleted = function() {
     return this.status === STATUS_COMPLETED;
   }
-  
-  ToDo.isActive = function(todo) {
-    return todo.isActive();
-  };
-  
-  ToDo.isCompleted = function(todo) {
-    return todo.isCompleted();
-  };
   
   lib.models = lib.models || {};
   lib.models.ToDo = ToDo;
