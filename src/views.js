@@ -115,6 +115,7 @@ var lib = (function (document, lib) {
     eventBus.subscribe(function() {
       that._apply();
     });
+    this._onHashChanged();
   }
 
   ToolbarView.prototype._bind = function () {
