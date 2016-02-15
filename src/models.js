@@ -1,4 +1,4 @@
-;var lib = (function(document, lib) {
+var lib = (function(document, lib) {
   var STATUS_COMPLETED = 'completed',
       STATUS_ACTIVE    = 'active';
       
@@ -12,6 +12,10 @@
   
   ToDo.prototype.markAsCompleted = function() {
     this.status = STATUS_COMPLETED;
+  }
+  
+  ToDo.prototype.markAsActive = function() {
+    this.status = STATUS_ACTIVE;
   }
   
   ToDo.prototype.isActive = function() {
@@ -34,4 +38,4 @@
   lib.models.ToDo = ToDo;
   
   return lib;
-})(document, lib || {})
+})(document, lib || {});

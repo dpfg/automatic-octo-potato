@@ -1,4 +1,4 @@
-; var lib = (function (document, lib) {
+var lib = (function (document, lib) {
 
   function _addEventListener(view, element, eventName, handler) {
     element.addEventListener(eventName, function () {
@@ -36,31 +36,57 @@
 
     this.controller = controller;
     this.el = document.querySelector('.todo-list');
+    var todoViews = this.el.querySelectorAll('.toggle') || [];
+    Array.prototype.forEach.call(todoViews, function(element){
+      that.linkToDoView(element);
+    }); 
+  }
+  
+  ListView.prototype.linkToDoView = function(todoView) {
+    _addEventListener(this, todoView.querySelector('.toggle'), 'click', this._onToggleToDo);
   }
 
   function populateToDoView(todo, todoView) {
+     if(todo.isCompleted() && !todoView.classList.contains('completed')) {
+       todoView.classList.add('completed');
+       todoView.querySelector('.toggle').setAttribute('checked', 'checked');
+     } else if(todo.isActive() && todoView.classList.contains('completed')) {
+       todoView.classList.remove('completed');
+       todoView.querySelector('.toggle').removeAttribute('checked');
+     }
+     
 	   todoView.setAttribute('data-id', todo.id);
      todoView.querySelector('label').innerHTML = todo.text;
   }
 
   ListView.prototype.render = function () {
+    var that = this;
     var todos = this.controller.getToDos();
     var listView = this.el;
-    var existedViews = this.el.querySelectorAll('li') || [];
-    todos.forEach(function (todo, index) {
-      var todoView;
-      if (existedViews.length - 1 >= index) {
-        // update existed view
-        todoView = existedViews[index];
-        populateToDoView(todo, todoView);
-      } else {
-        // create new view
-        todoView = lib.html.templates.newToDo();
-        todoView = listView.appendChild(todoView);
-        populateToDoView(todo, todoView);
-      }
+    
+    Array.prototype.forEach.call(this.el.querySelectorAll('li'), function(view){
+      view.remove();
     });
-
+    
+    todos.forEach(function (todo, index) {
+        // create new view
+        var todoView = lib.html.templates.newToDo();
+        todoView = listView.appendChild(todoView);
+        that.linkToDoView(todoView);
+        populateToDoView(todo, todoView);      
+    });
+  }
+  
+  ListView.prototype._onToggleToDo = function() {
+    var todoView = event.target.parentElement.parentElement;
+    if(todoView.classList.toggle('completed')) {
+      // completed
+      var todoId = Number(todoView.getAttribute('data-id'));
+      this.controller.markAsCompleted(todoId);
+    } else {
+      var todoId = Number(todoView.getAttribute('data-id'));
+      this.controller.markAsActive(todoId);
+    }
   }
 
   function ToolbarView(eventBus, controller) {
@@ -123,5 +149,5 @@
   lib.views.ToolbarView = ToolbarView;
 
   return lib;
-})(document, lib || {})
+})(document, lib || {});
 

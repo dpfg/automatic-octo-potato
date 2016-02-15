@@ -1,5 +1,5 @@
 
-; var lib = (function (document, lib) {
+var lib = (function (document, lib) {
   var ANY_EVENT_TYPE = -1;
 
   function EventBus() {
@@ -27,7 +27,7 @@
 
   lib.events = lib.events || {};
   lib.events.EventBus = EventBus;
-  
+
   // declare all events that can be fired in the app.
   lib.events.TODO_ADDED = 1;
   lib.events.TODO_COMPLETED = 2;
@@ -42,8 +42,33 @@
   lib.constants.VIEW_MODE_COMPLETED = 102;
   lib.constants.VIEW_MODE_ACTIVE = 103;
 
-  lib.storage = [];
+  function InMemory() {
+    this.todos = [];
+    this.mode = lib.constants.VIEW_MODE_ALL;
+  }
+  
+  InMemory.prototype.getToDos = function() {
+    return this.todos;
+  }
+  
+  InMemory.prototype.addToDo = function (todo) {
+    this.todos.push(todo);
+  }
+  
+  InMemory.prototype.replaceAllToDos = function (todos) {
+    this.todos = todos;
+  }
 
+  InMemory.prototype.setMode = function(mode) {
+    this.mode = mode;
+  }
+  
+  InMemory.prototype.getMode = function() {
+    return this.mode;
+  }
+  
+  lib.storage = lib.storage || {}
+  lib.storage.InMemory = InMemory;
 
   function generateDOMElement(name, clazz, children) {
     var _div = document.createElement(name);
@@ -57,8 +82,7 @@
     }
 
     return _div;
-  };
-
+  }
 
   var dsl = {
     div: function (clazz) { return generateDOMElement('div', clazz, Array.prototype.slice.call(arguments, 1)); },
@@ -72,7 +96,7 @@
     },
     label: function () { return generateDOMElement('label', null, Array.apply(null, arguments)); },
     button: function (clazz) { return generateDOMElement('button', clazz, Array.prototype.slice.call(arguments, 1)); }
-  };  
+  };
 
   lib.html = lib.html || {};
   lib.html.templates = lib.html.templates || {};
