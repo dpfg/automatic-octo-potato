@@ -1,5 +1,5 @@
-import constants from 'utils';
-import { View, Component } from 'base';
+import constants from '../utils';
+import { View, Component } from './base';
 
 class ToolbarController {
   constructor (storage) {

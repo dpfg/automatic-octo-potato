@@ -1,8 +1,8 @@
-import { EnterComponent } from 'components/enter';
-import { ToDoListComponent } from 'components/list';
-import { ToolbarComponent } from 'components/toolbar';
-import { EventBus } from 'events';
-import { InMemory } from 'storage';
+import { EnterComponent } from './components/enter';
+import { ToDoListComponent } from './components/list';
+import { ToolbarComponent } from './components/toolbar';
+import { EventBus } from './events';
+import { InMemory } from './storage';
 
 class ToDoApp {
   constructor () {

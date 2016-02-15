@@ -1,4 +1,4 @@
-import constants from 'util';
+import constants from './constants';
 
 export class InMemory {
   constructor () {

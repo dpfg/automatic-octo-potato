@@ -1,5 +1,5 @@
-import constants from 'utils';
-import { View, Component } from 'base';
+import constants from '../utils';
+import { View, Component } from './base';
 
 const modifyToDoById = (storage, id, modifier) => {
   const todos = storage.getToDos().filter(todo => todo.id === id);

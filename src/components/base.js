@@ -44,7 +44,7 @@ export class View {
     let hasChanges = false;
 
     this.bindings.forEach(binding => {
-      const updateValue = binding.valueGen();
+      const updateValue = binding.valueGetter();
 
       hasChanges = updateValue !== this.state[binding.key];
       binding.valueSetter(updateValue);

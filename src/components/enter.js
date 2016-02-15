@@ -1,5 +1,5 @@
-import ToDo from 'models';
-import { View, Component } from 'base';
+import ToDo from '../models';
+import { View, Component } from './base';
 
 export class EnterController {
 
