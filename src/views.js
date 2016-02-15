@@ -31,66 +31,86 @@
   function ListView(eventBus, controller) {
     var that = this;
     eventBus.subscribe(function (params) {
-      console.log('Handle any to do');
       that.render();
     });
 
     this.controller = controller;
+    this.el = document.querySelector('.todo-list');
+  }
+
+  function populateToDoView(todo, todoView) {
+	   todoView.setAttribute('data-id', todo.id);
+     todoView.querySelector('label').innerHTML = todo.text;
   }
 
   ListView.prototype.render = function () {
-	   console.log('render using new list ');
-     console.log(this.controller.getToDos()); 
+    var todos = this.controller.getToDos();
+    var listView = this.el;
+    var existedViews = this.el.querySelectorAll('li') || [];
+    todos.forEach(function (todo, index) {
+      var todoView;
+      if (existedViews.length - 1 >= index) {
+        // update existed view
+        todoView = existedViews[index];
+        populateToDoView(todo, todoView);
+      } else {
+        // create new view
+        todoView = lib.html.templates.newToDo();
+        todoView = listView.appendChild(todoView);
+        populateToDoView(todo, todoView);
+      }
+    });
+
   }
-  
+
   function ToolbarView(eventBus, controller) {
     this.eventBus = eventBus;
     this.controller = controller;
     this.el = document.querySelector('.footer');
-    
+
     this._bind();
     this._apply();
   }
-  
-  ToolbarView.prototype._bind = function() {
+
+  ToolbarView.prototype._bind = function () {
     _addEventListener(this, window, 'hashchange', this._onHashChanged);
     _addEventListener(this, this.el.querySelector('.clear-completed'), 'click', this._onClearCompleted);
   }
-  
+
   function calcViewMode(hash) {
     var viewMode = lib.constants.VIEW_MODE_UNKNOWN;
-    switch(hash) {
-      case '#/active': 	  viewMode = lib.constants.VIEW_MODE_ACTIVE; break;
+    switch (hash) {
+      case '#/active': viewMode = lib.constants.VIEW_MODE_ACTIVE; break;
       case '#/completed': viewMode = lib.constants.VIEW_MODE_COMPLETED; break;
-      case '#/':       	  viewMode = lib.constants.VIEW_MODE_ALL; break;
+      case '#/': viewMode = lib.constants.VIEW_MODE_ALL; break;
     }
     return viewMode;
   }
-  
+
   function isKnownViewMode(hash) {
     return calcViewMode(hash) !== lib.constants.VIEW_MODE_UNKNOWN;
   }
-  
+
   ToolbarView.prototype._onHashChanged = function () {
     var viewMode = calcViewMode(location.hash);
-    if(viewMode !== lib.constants.VIEW_MODE_UNKNOWN) {
+    if (viewMode !== lib.constants.VIEW_MODE_UNKNOWN) {
       this._apply();
-      this.controller.switchMode(viewMode);      
+      this.controller.switchMode(viewMode);
     }
   }
-  
+
   ToolbarView.prototype._onClearCompleted = function () {
     this.controller.clearCompleted();
   }
-  
-  ToolbarView.prototype._apply = function() {
-    if(this.controller.hasCompleted()) {
+
+  ToolbarView.prototype._apply = function () {
+    if (this.controller.hasCompleted()) {
       this.el.querySelector('.clear-completed').classList.remove('hidden');
     } else {
       this.el.querySelector('.clear-completed').classList.add('hidden');
     }
-    
-    if(!isKnownViewMode(location.hash)) {
+
+    if (!isKnownViewMode(location.hash)) {
       return;
     }
     this.el.querySelector('.filters .selected').classList.remove('selected');
