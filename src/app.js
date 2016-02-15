@@ -6,6 +6,7 @@ function ToDoApp(lib) {
     new lib.views.ListView(eventBus, new lib.controllers.ListController(eventBus, this.storage)),
     new lib.views.ToolbarView(eventBus, new lib.controllers.ToolbarController(eventBus, this.storage)),
     ];
+  eventBus.fire(lib.constants.APP_LOADED);
 }
 
 

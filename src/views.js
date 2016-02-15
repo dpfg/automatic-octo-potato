@@ -1,30 +1,32 @@
 var lib = (function (document, lib) {
 
-  function _addEventListener(view, element, eventName, handler) {
+  function addViewEvent(view, element, eventName, handler) {
     element.addEventListener(eventName, function () {
-      handler.apply(view);
+      handler.call(view, window.event.target);
     });
   }
 
   function EnterView(eventBus, controller) {
-    this.controller = controller;
-    this._link();
+    this.controller = controller;    
     var that = this;
+    this.registerEvents();
+    
     eventBus.subscribe(function () {
-      that.render();
+      that.link();
     });
   }
 
-  EnterView.prototype._link = function () {
-    this.input = document.querySelector('.new-todo');    
-    _addEventListener(this, this.input, 'keydown', this._onCreateNew);
+  // registerEvents view to the DOM
+  EnterView.prototype.registerEvents = function () {
+    var input = document.querySelector('.new-todo');    
+    addViewEvent(this, input, 'keydown', this.onCreateNew);
     
     var toggleAll = document.querySelector('.toggle-all');
-    _addEventListener(this, toggleAll, 'click', this._onToggleAll);
+    addViewEvent(this, toggleAll, 'click', this.onToggleAll);
   }
 
   var KEY_CODE_ENTER = 13;
-  EnterView.prototype._onCreateNew = function () {
+  EnterView.prototype.onCreateNew = function () {
     if (event.which === KEY_CODE_ENTER) {
       this.controller.addNew(event.target.value);
       this.clean();
@@ -32,14 +34,14 @@ var lib = (function (document, lib) {
   }
 
   EnterView.prototype.clean = function () {
-    this.input.value = '';
+    document.querySelector('.new-todo').value = '';
   }
   
-  EnterView.prototype._onToggleAll = function () {
+  EnterView.prototype.onToggleAll = function () {
     this.controller.toggleAll();
   }
   
-  EnterView.prototype.render = function () {
+  EnterView.prototype.link = function () {
     if(this.controller.hasToDos()){
       document.querySelector('.main').classList.remove('hidden');
     } else {
@@ -51,22 +53,22 @@ var lib = (function (document, lib) {
   function ListView(eventBus, controller) {
     var that = this;
     eventBus.subscribe(function (params) {
-      that.render();
+      that.link();
     });
 
     this.controller = controller;
     this.el = document.querySelector('.todo-list');
     var todoViews = this.el.querySelectorAll('.toggle') || [];
-    Array.prototype.forEach.call(todoViews, function(element){
-      that.linkToDoView(element);
+    Array.prototype.forEach.call(todoViews, function(todoView){
+      that.registerEvents(todoView);
     }); 
   }
   
-  ListView.prototype.linkToDoView = function(todoView) {
-    _addEventListener(this, todoView.querySelector('.toggle'), 'click', this._onToggleToDo);
-    _addEventListener(this, todoView.querySelector('.destroy'), 'click', this._onDestroyToDo);
+  ListView.prototype.registerEvents = function(todoView) {
+    addViewEvent(this, todoView.querySelector('.toggle'), 'click', this.onToggleToDo);
+    addViewEvent(this, todoView.querySelector('.destroy'), 'click', this.onDestroyToDo);
   }
-
+  
   function populateToDoView(todo, todoView) {
      if(todo.isCompleted() && !todoView.classList.contains('completed')) {
        todoView.classList.add('completed');
@@ -80,7 +82,7 @@ var lib = (function (document, lib) {
      todoView.querySelector('label').innerHTML = todo.text;
   }
 
-  ListView.prototype.render = function () {
+  ListView.prototype.link = function () {
     var that = this;
     var todos = this.controller.getToDos();
     var listView = this.el;
@@ -93,13 +95,13 @@ var lib = (function (document, lib) {
         // create new view
         var todoView = lib.html.templates.newToDo();
         todoView = listView.appendChild(todoView);
-        that.linkToDoView(todoView);
+        that.registerEvents(todoView);
         populateToDoView(todo, todoView);      
     });
   }
   
-  ListView.prototype._onToggleToDo = function() {
-    var todoView = event.target.parentElement.parentElement;
+  ListView.prototype.onToggleToDo = function(sourceElm) {
+    var todoView = sourceElm.parentElement.parentElement;
     if(todoView.classList.toggle('completed')) {
       // completed
       var todoId = Number(todoView.getAttribute('data-id'));
@@ -110,8 +112,8 @@ var lib = (function (document, lib) {
     }
   }
   
-  ListView.prototype._onDestroyToDo = function () {
-    var todoView = event.target.parentElement.parentElement;
+  ListView.prototype.onDestroyToDo = function (sourceElm) {
+    var todoView = sourceElm.parentElement.parentElement;
     var todoId = Number(todoView.getAttribute('data-id'));
     this.controller.removeToDo(todoId);
   }
@@ -121,19 +123,18 @@ var lib = (function (document, lib) {
     this.controller = controller;
     this.el = document.querySelector('.footer');
 
-    this._bind();
-    this._apply();
+    this.registerEvents();
     
     var that = this;
     eventBus.subscribe(function() {
-      that._apply();
+      that.link();
     });
-    this._onHashChanged();
+    this.onHashChanged();
   }
 
-  ToolbarView.prototype._bind = function () {
-    _addEventListener(this, window, 'hashchange', this._onHashChanged);
-    _addEventListener(this, this.el.querySelector('.clear-completed'), 'click', this._onClearCompleted);
+  ToolbarView.prototype.registerEvents = function () {
+    addViewEvent(this, window, 'hashchange', this.onHashChanged);
+    addViewEvent(this, this.el.querySelector('.clear-completed'), 'click', this.onClearCompleted);
   }
 
   function calcViewMode(hash) {
@@ -150,19 +151,19 @@ var lib = (function (document, lib) {
     return calcViewMode(hash) !== lib.constants.VIEW_MODE_UNKNOWN;
   }
 
-  ToolbarView.prototype._onHashChanged = function () {
+  ToolbarView.prototype.onHashChanged = function () {
     var viewMode = calcViewMode(location.hash);
     if (viewMode !== lib.constants.VIEW_MODE_UNKNOWN) {
-      this._apply();
+      this.link();
       this.controller.switchMode(viewMode);
     }
   }
 
-  ToolbarView.prototype._onClearCompleted = function () {
+  ToolbarView.prototype.onClearCompleted = function () {
     this.controller.clearCompleted();
   }
 
-  ToolbarView.prototype._apply = function () {
+  ToolbarView.prototype.link = function () {
     if (this.controller.hasCompleted()) {
       this.el.querySelector('.clear-completed').classList.remove('hidden');
     } else {

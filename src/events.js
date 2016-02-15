@@ -37,6 +37,7 @@ var lib = (function (document, lib) {
   lib.events.SWITCH_VIEW_MODE = 20;
 
   lib.events.CLEAN_COMPLETED = 30;
+  lib.events.APP_LOADED = 31;
 
   return lib;
 })(document, lib || {});
