@@ -40,6 +40,10 @@ var lib = (function(document, lib) {
     }
     this.eventBus.fire(lib.events.TODO_TOGGLE_ALL);
   }
+  
+  EnterController.prototype.hasToDos = function() {
+    return this.storage.getToDos().length > 0;
+  }
 
   function ListController(eventBus, storage) {
     this.eventBus = eventBus;

@@ -6,9 +6,13 @@ var lib = (function (document, lib) {
     });
   }
 
-  function EnterView(controller) {
+  function EnterView(eventBus, controller) {
     this.controller = controller;
     this._link();
+    var that = this;
+    eventBus.subscribe(function () {
+      that.render();
+    });
   }
 
   EnterView.prototype._link = function () {
@@ -33,6 +37,15 @@ var lib = (function (document, lib) {
   
   EnterView.prototype._onToggleAll = function () {
     this.controller.toggleAll();
+  }
+  
+  EnterView.prototype.render = function () {
+    if(this.controller.hasToDos()){
+      document.querySelector('.main').classList.remove('hidden');
+    } else {
+      document.querySelector('.main').classList.add('hidden');
+      document.querySelector('.toggle-all').checked = false;
+    }    
   }
 
   function ListView(eventBus, controller) {
