@@ -1,41 +1,30 @@
-var lib = (function(document, lib) {
-  var STATUS_COMPLETED = 'completed',
-      STATUS_ACTIVE    = 'active';
-      
-  var lastGeneratedId  = 0; // TODO: read from storage
-  
-  function ToDo(text) {
-    this.id 	  = lastGeneratedId++;
+
+const STATUS_COMPLETED = 'completed';
+const STATUS_ACTIVE = 'active';
+
+// TODO: read from storage
+let lastGeneratedId = 0;
+
+export default class ToDo {
+  constructor (text) {
+    this.id = lastGeneratedId++;
     this.status = STATUS_ACTIVE;
-    this.text   = text;
+    this.text = text;
   }
-  
-  ToDo.prototype.markAsCompleted = function() {
+
+  markAsCompleted () {
     this.status = STATUS_COMPLETED;
   }
-  
-  ToDo.prototype.markAsActive = function() {
+
+  markAsActive () {
     this.status = STATUS_ACTIVE;
   }
-  
-  ToDo.prototype.isActive = function() {
+
+  isActive () {
     return this.status === STATUS_ACTIVE;
   }
-  
-  ToDo.prototype.isCompleted = function() {
+
+  isCompleted () {
     return this.status === STATUS_COMPLETED;
   }
-  
-  ToDo.isActive = function(todo) {
-    return todo.isActive();
-  };
-  
-  ToDo.isCompleted = function(todo) {
-    return todo.isCompleted();
-  };
-  
-  lib.models = lib.models || {};
-  lib.models.ToDo = ToDo;
-  
-  return lib;
-})(document, lib || {});
+}

@@ -11,16 +11,16 @@
 				<h1>todos</h1>
 				<input class="new-todo" placeholder="What needs to be done?" autofocus>
 			</header>
-			<section class="main">
+			<section class="main hidden">
 				<input class="toggle-all" type="checkbox">
 				<label for="toggle-all">Mark all as complete</label>
 				<ul class="todo-list"></ul>
 			</section>
-			<footer class="footer">
+			<footer class="footer hidden">
 				<span class="todo-count"></span>
 				<ul class="filters">
 					<li>
-						<a href="#/" class="selected">All</a>
+						<a href="#/">All</a>
 					</li>
 					<li>
 						<a href="#/active">Active</a>
@@ -34,14 +34,8 @@
 		</section>
 		<footer class="info">
 			<p>Double-click to edit a todo</p>
-			<p>Created by dpfg</a></p>			
+			<p>Created by dpfg</a></p>
 		</footer>
-    <script src="src/models.js"></script>
-    <script src="src/controllers.js"></script>
-    <script src="src/views.js"></script>
-    <script src="src/storage.js"></script>
-    <script src="src/events.js"></script>
-    <script src="src/utils.js"></script>
-    <script src="src/app.js"></script>
+    <script src="dist/bundle.js"></script>
 	</body>
 </html>

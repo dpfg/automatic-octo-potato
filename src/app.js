@@ -1,12 +1,24 @@
-function ToDoApp(lib) {
-  var eventBus = new lib.events.EventBus();
-  this.storage = new lib.storage.InMemory();
-  this.views = [
-    new lib.views.EnterView(new lib.controllers.EnterController(eventBus, this.storage)),
-    new lib.views.ListView(eventBus, new lib.controllers.ListController(eventBus, this.storage)),
-    new lib.views.ToolbarView(eventBus, new lib.controllers.ToolbarController(eventBus, this.storage)),
+import { EnterComponent } from './components/enter';
+import { ToDoListComponent } from './components/list';
+import { ToolbarComponent } from './components/toolbar';
+import { EventBus } from './events';
+import { InMemory } from './storage';
+
+class ToDoApp {
+  constructor () {
+    this.eventBus = new EventBus();
+    this.storage = new InMemory();
+
+    this.components = [
+      new EnterComponent(this.eventBus, this.storage),
+      new ToDoListComponent(this.eventBus, this.storage),
+      new ToolbarComponent(this.eventBus, this.storage)
     ];
+  }
+
+  display () {
+    this.components.forEach(component => component.display());
+  }
 }
 
-
-var app = new ToDoApp(window.lib);
+window.todoapp = new ToDoApp();

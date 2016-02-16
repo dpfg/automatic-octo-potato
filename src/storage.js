@@ -1,38 +1,34 @@
-var lib = (function (document, lib) {
-  
-  function InMemory() {
+import constants from './constants';
+
+export class InMemory {
+  constructor () {
     this.todos = [];
-    this.mode = lib.constants.VIEW_MODE_ALL;
+    this.mode = constants.VIEW_MODE_ALL;
   }
-  
-  InMemory.prototype.getToDos = function() {
+
+  getToDos () {
     return this.todos;
   }
-  
-  InMemory.prototype.addToDo = function (todo) {
+
+  addToDo (todo) {
     this.todos.push(todo);
   }
-  
-  InMemory.prototype.replaceAllToDos = function (todos) {
+
+  replaceAllToDos (todos) {
     this.todos = todos;
   }
-  
-  InMemory.prototype.removeToDo = function (id) {
+
+  removeToDo (id) {
     this.todos = this.todos.filter(function (todo) {
       return todo.id !== id;
     });
   }
 
-  InMemory.prototype.setMode = function(mode) {
+  setMode (mode) {
     this.mode = mode;
   }
-  
-  InMemory.prototype.getMode = function() {
+
+  getMode () {
     return this.mode;
   }
-  
-  lib.storage = lib.storage || {}
-  lib.storage.InMemory = InMemory;  
-
-  return lib;
-})(document, lib || {});
+}

@@ -1,3 +1,7 @@
 {
-    "extends": "eslint:recommended"
+ "extends": "es/2015/client",
+ "ecmaFeatures": { "modules": true },
+ "rules" : {
+   "dot-location": 0
+ }
 }
