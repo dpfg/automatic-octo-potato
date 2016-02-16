@@ -4,7 +4,7 @@ Install all dependencies
 
 ```> npm install ```
 
-Comple ES5 to ES2015 and bundle everything to one file
+Compile ES2015 to ES5 and bundle everything to one file
 
 ```> npm run build ```
 
