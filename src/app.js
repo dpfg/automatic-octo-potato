@@ -1,6 +1,6 @@
-import { EnterView } from './components/enter';
-import { ListView } from './components/list';
-import { ToolbarView } from './components/toolbar';
+import { EnterView } from './views/enter';
+import { ListView } from './views/list';
+import { ToolbarView } from './views/toolbar';
 import { InMemory } from './storage';
 import { ToDoService } from './services';
 
