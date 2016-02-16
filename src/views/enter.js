@@ -12,10 +12,10 @@ export class EnterView extends View {
     const textInput = document.querySelector('.todoapp .new-todo');
     const toggleAllBtn = document.querySelector('.todoapp .toggle-all');
 
-    super.addEventListener(textInput, 'keydown', this.onCreateNew);
-    super.addEventListener(toggleAllBtn, 'click', this.onToggleAll);
+    super.bindEvent('keydown', textInput, this.onCreateNew);
+    super.bindEvent('click', toggleAllBtn, this.onToggleAll);
 
-    service.hasToDos().subscribe(hasTodos => { this.hasTodos = hasTodos; this.display(); });
+    super.bindModel(service.hasToDos(), this.updateUI);
   }
 
   onCreateNew () {
@@ -33,8 +33,8 @@ export class EnterView extends View {
     this.service.toggleAll();
   }
 
-  display() {
-    if (this.hasTodos) {
+  updateUI(hasTodos) {
+    if (hasTodos) {
       document.querySelector('.main').classList.remove('hidden');
     } else {
       document.querySelector('.main').classList.add('hidden');

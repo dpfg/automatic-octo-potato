@@ -1,5 +1,6 @@
 import constants from '../constants';
 import { View } from './base';
+import { bind } from '../observe';
 
 const calcViewMode = (hash) => {
   let viewMode = constants.VIEW_MODE_UNKNOWN;
@@ -22,12 +23,12 @@ export class ToolbarView extends View {
     super('.footer');
     this.service = service;
 
-    super.addEventListener(window, 'hashchange', this.onHashChanged);
-    super.addEventListener(this.el.querySelector('.clear-completed'), 'click', this.onClearCompleted);
+    super.bindEvent('hashchange', window, this.onHashChanged);
+    super.bindEvent('click', this.el.querySelector('.clear-completed'), this.onClearCompleted);
 
-    service.getViewMode().subscribe(val => { this.viewMode = val; this.display(); });
-    service.hasToDos().subscribe(val => { this.hasToDos = val; this.display(); });
-    service.hasCompleted().subscribe(val => { this.hasCompleted = val; this.display(); });
+    super.bindModel(service.getViewMode(), this.changeViewMode);
+    super.bindModel(service.hasToDos(), this.toggle);
+    super.bindModel(service.hasCompleted(), this.toggleCleanCompleted);
 
     this.onHashChanged();
   }
@@ -44,19 +45,7 @@ export class ToolbarView extends View {
     this.service.clearCompleted();
   }
 
-  display() {
-    if (this.hasCompleted) {
-      this.el.querySelector('.clear-completed').classList.remove('hidden');
-    } else {
-      this.el.querySelector('.clear-completed').classList.add('hidden');
-    }
-
-    if (!this.hasToDos) {
-      this.el.classList.add('hidden');
-    } else {
-      this.el.classList.remove('hidden');
-    }
-
+  changeViewMode(viewMode) {
     if (!isKnownViewMode(location.hash)) {
       return;
     }
@@ -67,5 +56,21 @@ export class ToolbarView extends View {
       selectedFilter.classList.remove('selected');
     }
     this.el.querySelector('.filters li a[href="' + location.hash + '"]').classList.add('selected');
+  }
+
+  toggle (visible) {
+    if (!visible) {
+      this.el.classList.add('hidden');
+    } else {
+      this.el.classList.remove('hidden');
+    }
+  }
+
+  toggleCleanCompleted (hasCompleted) {
+    if (hasCompleted) {
+      this.el.querySelector('.clear-completed').classList.remove('hidden');
+    } else {
+      this.el.querySelector('.clear-completed').classList.add('hidden');
+    }
   }
 }

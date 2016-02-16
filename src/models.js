@@ -31,4 +31,12 @@ export class ToDo {
   is(mode) {
     return this.status === mode;
   }
+
+  static isActive(todo) {
+    return todo.isActive();
+  }
+
+  static isCompleted(todo) {
+    return todo.isCompleted();
+  }
 }

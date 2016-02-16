@@ -2,6 +2,15 @@ import { Observable } from './observe';
 import { ToDo } from './models';
 import constants from './constants';
 
+const makeVisibleList = (viewMode, todos) => todos.filter(todo => {
+  switch (viewMode) {
+    case constants.VIEW_MODE_ALL: return true;
+    case constants.VIEW_MODE_COMPLETED: return todo.isCompleted();
+    case constants.VIEW_MODE_ACTIVE: return todo.isActive();
+    default: break;
+  }
+});
+
 export class ToDoService {
 
   constructor(storage) {
@@ -16,18 +25,7 @@ export class ToDoService {
   }
 
   getVisibleToDoList() {
-    return Observable.of(
-      (viewMode, todos) => todos.filter(todo => {
-        switch (viewMode) {
-          case constants.VIEW_MODE_ALL: return true;
-          case constants.VIEW_MODE_COMPLETED: return todo.isCompleted();
-          case constants.VIEW_MODE_ACTIVE: return todo.isActive();
-          default: break;
-        }
-      }),
-      this.viewMode,
-      this.todoList
-      );
+    return Observable.of(makeVisibleList, this.viewMode, this.todoList);
   }
 
   getViewMode() {
@@ -42,7 +40,7 @@ export class ToDoService {
   }
 
   toggleAll() {
-    const hasActive = this.storage.getToDos().filter(todo => todo.isActive()).length > 0;
+    const hasActive = this.storage.getToDos().filter(ToDo.isActive).length > 0;
 
     if (hasActive) {
       this.storage.getToDos().forEach(todo => todo.markAsCompleted());
@@ -85,11 +83,14 @@ export class ToDoService {
   }
 
   hasCompleted() {
-    return Observable.of(todos => todos.filter(todo => todo.isCompleted()).length > 0, this.todoList);
+    return Observable.of(
+      todos => todos.filter(ToDo.isCompleted).length > 0,
+      this.todoList
+      );
   }
 
   clearCompleted () {
-    this.storage.replaceAllToDos(this.storage.getToDos().filter(todo => todo.isActive()));
+    this.storage.replaceAllToDos(this.storage.getToDos().filter(ToDo.isActive));
     this.todoList.setValue(this.storage.getToDos());
   }
 }

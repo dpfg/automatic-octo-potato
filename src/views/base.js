@@ -5,16 +5,16 @@ export class View {
     }
   }
 
-  addEventListener(element, eventName, handler) {
+  bindModel (observable, callback) {
+    observable.subscribe(value => callback.call(this, value));
+  }
+
+  bindEvent (eventName, element, handler) {
     element.addEventListener(eventName, () => {
       if (handler.call(this, window.event.target)) {
         this.onEvent();
       }
     });
-  }
-
-  display () {
-
   }
 }
 

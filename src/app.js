@@ -15,10 +15,6 @@ class ToDoApp {
       new ToolbarView(this.todoService)
     ];
   }
-
-  display () {
-    this.components.forEach(component => component.display());
-  }
 }
 
 window.todoapp = new ToDoApp();

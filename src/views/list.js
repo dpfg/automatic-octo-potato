@@ -32,12 +32,12 @@ export class ListView extends View {
 
     forEach(this.el.querySelectorAll('.toggle') || [], this.addToDoEvents);
 
-    this.service.getVisibleToDoList().subscribe(todos => { this.todos = todos; this.display(); });
+    super.bindModel(service.getVisibleToDoList(), this.updateUI);
   }
 
   addToDoEvents(todoView) {
-    super.addEventListener(todoView.querySelector('.toggle'), 'click', this.onToggleToDo);
-    super.addEventListener(todoView.querySelector('.destroy'), 'click', this.onDestroyToDo);
+    super.bindEvent('click', todoView.querySelector('.toggle'), this.onToggleToDo);
+    super.bindEvent('click', todoView.querySelector('.destroy'), this.onDestroyToDo);
   }
 
   onToggleToDo(sourceElm) {
@@ -57,9 +57,9 @@ export class ListView extends View {
     this.service.removeToDo(todoId);
   }
 
-  display() {
+  updateUI(todos) {
     forEach(this.el.querySelectorAll('li'), view => view.remove());
-    this.todos.forEach((todo) => {
+    todos.forEach((todo) => {
       let todoView = templates.newToDo();
 
       todoView = this.el.appendChild(todoView);
