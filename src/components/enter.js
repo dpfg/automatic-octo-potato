@@ -48,7 +48,9 @@ export class EnterView extends View {
     if (event.which === KEY_CODE_ENTER) {
       this.controller.addNew(event.target.value);
       this.clean();
+      return true;
     }
+    return false;
   }
 
   clean () {
@@ -57,9 +59,10 @@ export class EnterView extends View {
 
   onToggleAll () {
     this.controller.toggleAll();
+    return true;
   }
 
-  display () {
+  display() {
     if (this.controller.hasToDos()) {
       document.querySelector('.main').classList.remove('hidden');
     } else {

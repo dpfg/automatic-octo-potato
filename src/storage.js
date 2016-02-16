@@ -7,7 +7,7 @@ export class InMemory {
   }
 
   getToDos () {
-    return this.todos;
+    return this.todos.slice();
   }
 
   addToDo (todo) {

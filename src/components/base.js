@@ -23,7 +23,7 @@ export class Component {
 export class View {
   constructor (elementSelector = null) {
     this.bindings = [];
-    this.state = [];
+    this.state = {};
     if (elementSelector) {
       this.el = document.querySelector(elementSelector);
     }
@@ -33,27 +33,33 @@ export class View {
   $model (name, valueGetter, valueSetter) {
     const value = valueGetter();
 
-    this.state.push({ key: name, value });
+    this.state[name] = value;
     this.bindings.push({ key: name, valueGetter, valueSetter });
     return value;
   }
 
   $event (element, eventName, handler) {
     element.addEventListener(eventName, () => {
-      handler.call(this, window.event.target);
-      this.onEvent();
+      if (handler.call(this, window.event.target)) {
+        this.onEvent();
+      }
     });
   }
 
   $update () {
     let hasChanges = false;
-
-    this.bindings.forEach(binding => {
-      const updateValue = binding.valueGetter();
-
+    
+    let i = 0;
+    while (!hasChanges && i < this.bindings.length) {
+      const binding = this.bindings[i];
+      const updateValue = binding.valueGetter();      
       hasChanges = updateValue !== this.state[binding.key];
+                        
       binding.valueSetter(updateValue);
-    });
+      this.state[binding.key] = updateValue;
+      i++;
+    }
+    
     return hasChanges;
   }
 

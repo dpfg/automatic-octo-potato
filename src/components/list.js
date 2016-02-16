@@ -82,15 +82,17 @@ class ListView extends View {
     } else {
       this.controller.markAsActive(todoId);
     }
+    return true;
   }
 
   onDestroyToDo (sourceElm) {
     const todoId = extractToDoId(sourceElm.parentElement.parentElement);
 
     this.controller.removeToDo(todoId);
+    return true;
   }
 
-  display () {
+  display() {
     Array.prototype.forEach.call(this.el.querySelectorAll('li'), function (view) {
       view.remove();
     });

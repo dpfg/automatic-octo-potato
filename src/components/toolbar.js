@@ -50,7 +50,9 @@ class ToolbarView extends View {
 
     super.$event(window, 'hashchange', this.onHashChanged);
     super.$event(this.el.querySelector('.clear-completed'), 'click', this.onClearCompleted);
-    super.$model('viewMode', () => controller.getViewMode(), (val) => this.viewMode = val);
+    super.$model('viewMode', () => this.controller.getViewMode(), (val) => this.viewMode = val);
+    super.$model('hasToDos', () => this.controller.hasToDos(), (val) => this.hasToDos = val);
+    super.$model('hasCompleted', () => this.controller.hasCompleted(), (val) => this.hasCompleted = val);
 
     this.onHashChanged();
   }
@@ -60,21 +62,24 @@ class ToolbarView extends View {
 
     if (viewMode !== constants.VIEW_MODE_UNKNOWN) {
       this.controller.switchMode(viewMode);
+      return true;
     }
+    return false;
   }
 
   onClearCompleted () {
     this.controller.clearCompleted();
+    return true;
   }
 
-  display () {
-    if (this.controller.hasCompleted()) {
+  display() {
+    if (this.hasCompleted) {
       this.el.querySelector('.clear-completed').classList.remove('hidden');
     } else {
       this.el.querySelector('.clear-completed').classList.add('hidden');
     }
 
-    if (!this.controller.hasToDos()) {
+    if (!this.hasToDos) {
       this.el.classList.add('hidden');
     } else {
       this.el.classList.remove('hidden');
