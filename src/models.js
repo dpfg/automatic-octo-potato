@@ -5,7 +5,7 @@ const STATUS_ACTIVE = 'active';
 // TODO: read from storage
 let lastGeneratedId = 0;
 
-export default class ToDo {
+export class ToDo {
   constructor (text) {
     this.id = lastGeneratedId++;
     this.status = STATUS_ACTIVE;
@@ -26,5 +26,9 @@ export default class ToDo {
 
   isCompleted () {
     return this.status === STATUS_COMPLETED;
+  }
+
+  is(mode) {
+    return this.status === mode;
   }
 }

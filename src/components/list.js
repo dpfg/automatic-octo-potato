@@ -1,46 +1,7 @@
 import constants from '../constants';
 import templates from '../templates';
-import { View, Component } from './base';
-
-const modifyToDoById = (storage, id, modifier) => {
-  const todos = storage.getToDos().filter(todo => todo.id === id);
-
-  if (todos.length === 0) {
-    return;
-  }
-  todos.forEach(modifier);
-};
-
-class ListController {
-  constructor (storage) {
-    this.storage = storage;
-  }
-
-  getToDos () {
-    const mode = this.storage.getMode();
-
-    if (mode === constants.VIEW_MODE_ALL) {
-      return this.storage.getToDos();
-    } else if (mode === constants.VIEW_MODE_ACTIVE) {
-      return this.storage.getToDos().filter(todo => todo.isActive());
-    } else if (mode === constants.VIEW_MODE_COMPLETED) {
-      return this.storage.getToDos().filter(todo => todo.isCompleted());
-    }
-    return [];
-  }
-
-  markAsCompleted (id) {
-    modifyToDoById(this.storage, id, todo => todo.markAsCompleted());
-  }
-
-  markAsActive (id) {
-    modifyToDoById(this.storage, id, todo => todo.markAsActive());
-  }
-
-  removeToDo (id) {
-    this.storage.removeToDo(id);
-  }
-}
+import { View } from './base';
+import { Observable } from '../observe';
 
 const extractToDoId = todoView => Number(todoView.getAttribute('data-id'));
 const populateToDoView = (todo, todoView) => {
@@ -56,40 +17,39 @@ const populateToDoView = (todo, todoView) => {
   todoView.querySelector('label').innerHTML = todo.text;
 };
 
-class ListView extends View {
-  constructor (controller) {
+export class ListView extends View {
+  constructor(service) {
     super('.todo-list');
-    super.$model('todos', () => controller.getToDos(), todos => this.todos = todos);
-    this.controller = controller;
+    this.service = service;
 
     const todoViews = this.el.querySelectorAll('.toggle') || [];
 
     Array.prototype.forEach.call(todoViews, todoView => this.addToDoEvents(todoView));
+
+    this.service.getVisibleToDoList().subscribe(todos => { this.todos = todos; this.display(); });
   }
 
-  addToDoEvents (todoView) {
-    super.$event(todoView.querySelector('.toggle'), 'click', this.onToggleToDo);
-    super.$event(todoView.querySelector('.destroy'), 'click', this.onDestroyToDo);
+  addToDoEvents(todoView) {
+    super.addEventListener(todoView.querySelector('.toggle'), 'click', this.onToggleToDo);
+    super.addEventListener(todoView.querySelector('.destroy'), 'click', this.onDestroyToDo);
   }
 
-  onToggleToDo (sourceElm) {
+  onToggleToDo(sourceElm) {
     const todoView = sourceElm.parentElement.parentElement;
     const todoId = extractToDoId(todoView);
 
     if (todoView.classList.toggle('completed')) {
       // completed
-      this.controller.markAsCompleted(todoId);
+      this.service.markAsCompleted(todoId);
     } else {
-      this.controller.markAsActive(todoId);
+      this.service.markAsActive(todoId);
     }
-    return true;
   }
 
-  onDestroyToDo (sourceElm) {
+  onDestroyToDo(sourceElm) {
     const todoId = extractToDoId(sourceElm.parentElement.parentElement);
 
-    this.controller.removeToDo(todoId);
-    return true;
+    this.service.removeToDo(todoId);
   }
 
   display() {
@@ -105,14 +65,5 @@ class ListView extends View {
       this.addToDoEvents(todoView);
       populateToDoView(todo, todoView);
     });
-  }
-}
-
-export class ToDoListComponent extends Component {
-  constructor (eventBus, storage) {
-    const controller = new ListController(storage);
-    const view = new ListView(controller);
-
-    super(eventBus, controller, view);
   }
 }

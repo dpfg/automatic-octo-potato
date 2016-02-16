@@ -1,56 +1,28 @@
-import ToDo from '../models';
-import { View, Component } from './base';
-
-export class EnterController {
-
-  constructor (storage) {
-    this.storage = storage;
-  }
-
-  addNew (text) {
-    const todo = new ToDo(text);
-
-    this.storage.addToDo(todo);
-  }
-
-  toggleAll () {
-    const hasActive = this.storage.getToDos().filter(todo => todo.isActive()).length > 0;
-
-    if (hasActive) {
-      // complete all
-      this.storage.getToDos().forEach(todo => todo.markAsCompleted());
-    } else {
-      this.storage.getToDos().forEach(todo => todo.markAsActive());
-    }
-  }
-
-  hasToDos () {
-    return this.storage.getToDos().length > 0;
-  }
-}
+import { ToDo } from '../models';
+import { View } from './base';
 
 const KEY_CODE_ENTER = 13;
 
 export class EnterView extends View {
 
-  constructor (controller) {
+  constructor (service) {
     super();
-    this.controller = controller;
+    this.service = service;
+
     const textInput = document.querySelector('.todoapp .new-todo');
     const toggleAllBtn = document.querySelector('.todoapp .toggle-all');
 
-    super.$event(textInput, 'keydown', this.onCreateNew);
-    super.$event(toggleAllBtn, 'click', this.onToggleAll);
-    super.$model('hasTodos', () => this.controller.hasToDos(), val => this.hasToDos = val);
+    super.addEventListener(textInput, 'keydown', this.onCreateNew);
+    super.addEventListener(toggleAllBtn, 'click', this.onToggleAll);
+
+    service.hasToDos().subscribe(hasTodos => { this.hasTodos = hasTodos; this.display(); });
   }
 
   onCreateNew () {
     if (event.which === KEY_CODE_ENTER) {
-      this.controller.addNew(event.target.value);
+      this.service.addNew(event.target.value);
       this.clean();
-      return true;
     }
-    return false;
   }
 
   clean () {
@@ -58,25 +30,15 @@ export class EnterView extends View {
   }
 
   onToggleAll () {
-    this.controller.toggleAll();
-    return true;
+    this.service.toggleAll();
   }
 
   display() {
-    if (this.controller.hasToDos()) {
+    if (this.hasTodos) {
       document.querySelector('.main').classList.remove('hidden');
     } else {
       document.querySelector('.main').classList.add('hidden');
       document.querySelector('.toggle-all').checked = false;
     }
-  }
-}
-
-export class EnterComponent extends Component {
-  constructor (eventBus, storage) {
-    const controller = new EnterController(storage);
-    const view = new EnterView(controller);
-
-    super(eventBus, controller, view);
   }
 }

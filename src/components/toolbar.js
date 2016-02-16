@@ -1,31 +1,5 @@
 import constants from '../constants';
-import { View, Component } from './base';
-
-class ToolbarController {
-  constructor (storage) {
-    this.storage = storage;
-  }
-
-  switchMode (mode) {
-    this.storage.setMode(mode);
-  }
-
-  hasCompleted () {
-    return this.storage.getToDos().filter(todo => todo.isCompleted()).length > 0;
-  }
-
-  clearCompleted () {
-    this.storage.replaceAllToDos(this.storage.getToDos().filter(todo => todo.isActive()));
-  }
-
-  hasToDos () {
-    return this.storage.getToDos().length > 0;
-  }
-
-  getViewMode () {
-    return this.storage.getMode();
-  }
-}
+import { View } from './base';
 
 const calcViewMode = (hash) => {
   let viewMode = constants.VIEW_MODE_UNKNOWN;
@@ -43,16 +17,16 @@ const isKnownViewMode = (hash) => {
   return calcViewMode(hash) !== constants.VIEW_MODE_UNKNOWN;
 };
 
-class ToolbarView extends View {
-  constructor (controller) {
+export class ToolbarView extends View {
+  constructor(service) {
     super('.footer');
-    this.controller = controller;
+    this.service = service;
 
-    super.$event(window, 'hashchange', this.onHashChanged);
-    super.$event(this.el.querySelector('.clear-completed'), 'click', this.onClearCompleted);
-    super.$model('viewMode', () => this.controller.getViewMode(), (val) => this.viewMode = val);
-    super.$model('hasToDos', () => this.controller.hasToDos(), (val) => this.hasToDos = val);
-    super.$model('hasCompleted', () => this.controller.hasCompleted(), (val) => this.hasCompleted = val);
+    super.addEventListener(window, 'hashchange', this.onHashChanged);
+    super.addEventListener(this.el.querySelector('.clear-completed'), 'click', this.onClearCompleted);
+    service.getViewMode().subscribe(val => { this.viewMode = val; this.display(); });
+    service.hasToDos().subscribe(val => { this.hasToDos = val; this.display(); });
+    service.hasCompleted().subscribe(val => { this.hasCompleted = val; this.display(); });
 
     this.onHashChanged();
   }
@@ -61,15 +35,12 @@ class ToolbarView extends View {
     const viewMode = calcViewMode(location.hash);
 
     if (viewMode !== constants.VIEW_MODE_UNKNOWN) {
-      this.controller.switchMode(viewMode);
-      return true;
+      this.service.switchMode(viewMode);
     }
-    return false;
   }
 
   onClearCompleted () {
-    this.controller.clearCompleted();
-    return true;
+    this.service.clearCompleted();
   }
 
   display() {
@@ -95,15 +66,5 @@ class ToolbarView extends View {
       selectedFilter.classList.remove('selected');
     }
     this.el.querySelector('.filters li a[href="' + location.hash + '"]').classList.add('selected');
-  }
-}
-
-export class ToolbarComponent extends Component {
-  constructor (eventBus, storage) {
-    const controller = new ToolbarController(storage);
-    const view = new ToolbarView(controller);
-
-    super(eventBus, controller, view);
-    super.$upstream();
   }
 }
