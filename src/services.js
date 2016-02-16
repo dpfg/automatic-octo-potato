@@ -45,7 +45,6 @@ export class ToDoService {
     const hasActive = this.storage.getToDos().filter(todo => todo.isActive()).length > 0;
 
     if (hasActive) {
-      // complete all
       this.storage.getToDos().forEach(todo => todo.markAsCompleted());
     } else {
       this.storage.getToDos().forEach(todo => todo.markAsActive());

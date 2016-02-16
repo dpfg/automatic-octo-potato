@@ -5,11 +5,15 @@ import { View } from './base';
 const extractToDoId = todoView => Number(todoView.getAttribute('data-id'));
 
 const populateToDoView = (todo, todoView) => {
-  if (todo.isCompleted() && !todoView.classList.contains('completed')) {
-    todoView.classList.add('completed');
+  const classes = todoView.classList;
+
+  if (todo.isCompleted() && !classes.contains('completed')) {
+    classes.add('completed');
     todoView.querySelector('.toggle').setAttribute('checked', 'checked');
-  } else if (todo.isActive() && todoView.classList.contains('completed')) {
-    todoView.classList.remove('completed');
+  }
+
+  if (todo.isActive() && classes.contains('completed')) {
+    classes.remove('completed');
     todoView.querySelector('.toggle').removeAttribute('checked');
   }
 
@@ -17,14 +21,16 @@ const populateToDoView = (todo, todoView) => {
   todoView.querySelector('label').innerHTML = todo.text;
 };
 
+const forEach = (iterable, func) => {
+  Array.prototype.forEach.call(iterable, item => func(item));
+}
+
 export class ListView extends View {
   constructor(service) {
     super('.todo-list');
     this.service = service;
 
-    const todoViews = this.el.querySelectorAll('.toggle') || [];
-
-    Array.prototype.forEach.call(todoViews, todoView => this.addToDoEvents(todoView));
+    forEach(this.el.querySelectorAll('.toggle') || [], this.addToDoEvents);
 
     this.service.getVisibleToDoList().subscribe(todos => { this.todos = todos; this.display(); });
   }
@@ -52,10 +58,7 @@ export class ListView extends View {
   }
 
   display() {
-    Array.prototype.forEach.call(this.el.querySelectorAll('li'), function (view) {
-      view.remove();
-    });
-
+    forEach(this.el.querySelectorAll('li'), view => view.remove());
     this.todos.forEach((todo) => {
       let todoView = templates.newToDo();
 
