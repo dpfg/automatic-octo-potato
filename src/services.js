@@ -6,6 +6,7 @@ export class ToDoService {
 
   constructor(storage) {
     this.storage = storage;
+
     this.todoList = new Observable(storage.getToDos());
     this.viewMode = new Observable(storage.getMode());
   }

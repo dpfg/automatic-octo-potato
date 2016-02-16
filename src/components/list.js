@@ -1,9 +1,9 @@
 import constants from '../constants';
 import templates from '../templates';
 import { View } from './base';
-import { Observable } from '../observe';
 
 const extractToDoId = todoView => Number(todoView.getAttribute('data-id'));
+
 const populateToDoView = (todo, todoView) => {
   if (todo.isCompleted() && !todoView.classList.contains('completed')) {
     todoView.classList.add('completed');
@@ -39,7 +39,6 @@ export class ListView extends View {
     const todoId = extractToDoId(todoView);
 
     if (todoView.classList.toggle('completed')) {
-      // completed
       this.service.markAsCompleted(todoId);
     } else {
       this.service.markAsActive(todoId);
@@ -58,7 +57,6 @@ export class ListView extends View {
     });
 
     this.todos.forEach((todo) => {
-      // create new view
       let todoView = templates.newToDo();
 
       todoView = this.el.appendChild(todoView);

@@ -24,6 +24,7 @@ export class ToolbarView extends View {
 
     super.addEventListener(window, 'hashchange', this.onHashChanged);
     super.addEventListener(this.el.querySelector('.clear-completed'), 'click', this.onClearCompleted);
+
     service.getViewMode().subscribe(val => { this.viewMode = val; this.display(); });
     service.hasToDos().subscribe(val => { this.hasToDos = val; this.display(); });
     service.hasCompleted().subscribe(val => { this.hasCompleted = val; this.display(); });
