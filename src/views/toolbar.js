@@ -1,6 +1,5 @@
 import constants from '../constants';
 import { View } from './base';
-import { bind } from '../observe';
 
 const calcViewMode = (hash) => {
   let viewMode = constants.VIEW_MODE_UNKNOWN;

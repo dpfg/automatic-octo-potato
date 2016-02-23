@@ -7,7 +7,7 @@ export class Observable {
 
   static of (func) {
     const obs = new Observable();
-    const dependencies = Array.prototype.slice.call(arguments, 1);
+    const dependencies = [].slice.call(arguments, 1);
 
     dependencies.forEach(dep => dep.subscribe(() => {
       obs.setValue(func.apply(null, dependencies.map(_dep => _dep.getValue())));

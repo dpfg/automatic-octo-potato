@@ -22,7 +22,7 @@ const populateToDoView = (todo, todoView) => {
 };
 
 const forEach = (iterable, func) => {
-  Array.prototype.forEach.call(iterable, item => func(item));
+  [].forEach.call(iterable, item => func(item));
 }
 
 export class ListView extends View {
